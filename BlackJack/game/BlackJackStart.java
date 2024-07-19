@@ -84,8 +84,7 @@ public class BlackJackStart extends JFrame {
         ImageIcon resizedIcon = new ImageIcon(resizedImage);
 
         // Create a JLabel for the image and set its icon to the resized image
-        JLabel imageLabel = new JLabel(resizedIcon);
-        return imageLabel;
+        return new JLabel(resizedIcon);
     }
 
     public static void main(String[] args) {
