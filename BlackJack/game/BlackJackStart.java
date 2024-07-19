@@ -3,8 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class BlackJackPanel extends JFrame {
-    public BlackJackPanel() {
+public class BlackJackStart extends JFrame {
+    public BlackJackStart() {
         setTitle("Welcome to BlackJack!");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -24,7 +24,7 @@ public class BlackJackPanel extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Show the input dialog for the initial pot
-                PotInputDialog potInputDialog = new PotInputDialog(BlackJackPanel.this);
+                PotInputDialog potInputDialog = new PotInputDialog(BlackJackStart.this);
                 potInputDialog.setVisible(true);
 
                 // If the user confirmed their pot amount, start the game
@@ -38,7 +38,7 @@ public class BlackJackPanel extends JFrame {
                     new BlackJackGame(playerAccount);
 
                     // Close the current introduction screen
-                    BlackJackPanel.this.dispose();
+                    BlackJackStart.this.dispose();
                 }
             }
         });
@@ -68,7 +68,7 @@ public class BlackJackPanel extends JFrame {
     }
 
     private static JLabel getjLabel() {
-        ImageIcon imageIcon = new ImageIcon("deck.png");
+        ImageIcon imageIcon = new ImageIcon("BlackJack/deck.png");
 
         // Get the image from the ImageIcon
         Image originalImage = imageIcon.getImage();
@@ -89,6 +89,6 @@ public class BlackJackPanel extends JFrame {
     }
 
     public static void main(String[] args) {
-        new BlackJackPanel();
+        new BlackJackStart();
     }
 }
