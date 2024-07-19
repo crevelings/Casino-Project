@@ -1,34 +1,33 @@
-public class Card {
-    protected final String suit;
-    protected final String rank;
-    protected String imagePath;
+import java.util.ArrayList;
+import java.util.Collections;
 
-    public Card(String suit, String rank, String imagePath) { // Modify the constructor
-        this.suit = suit;
-        this.rank = rank;
-        this.imagePath = imagePath;
-    }
+public class Deck {
+    protected ArrayList<Card> cards;
 
-    public String getImagePath() {
-        return imagePath;
-    }
+    public Deck() {
+        cards = new ArrayList<>();
+        String[] suits = {"Hearts", "Spades", "Diamonds", "Clubs"};
+        String[] values = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"};
 
-    public String toString() {
-        return rank + " of " + suit;
-    }
-
-    public int getValue(int currentHandScore) {
-        if (rank.equals("Ace")) {
-            // Determine the value of Ace (1 or 11) based on the current hand score
-            if (currentHandScore + 11 <= 21) {
-                return 11; // Return 11 if it doesn't cause a bust
-            } else {
-                return 1; // Return 1 if returning 11 would cause a bust
+        for (String suit : suits) {
+            for (String value : values) {
+                // Construct the image path based on the card's suit and rank
+                String imagePath = "BlackJack/cards/" + value + "_of_" + suit + ".png";
+                cards.add(new Card(suit, value, imagePath)); // Pass the imagePath
             }
-        } else if (rank.equals("Jack") || rank.equals("Queen") || rank.equals("King")) {
-            return 10;
-        } else {
-            return Integer.parseInt(rank);
         }
     }
+
+    public void shuffle() {
+        Collections.shuffle(cards);
+    }
+
+    public Card dealCard() {
+        return cards.removeFirst();
+    }
+
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
+
 }
