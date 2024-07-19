@@ -68,7 +68,7 @@ public class BlackJackStart extends JFrame {
     }
 
     private static JLabel getjLabel() {
-        ImageIcon imageIcon = new ImageIcon("deck.png");
+        ImageIcon imageIcon = new ImageIcon("BlackJack/deck.png");
 
         // Get the image from the ImageIcon
         Image originalImage = imageIcon.getImage();
