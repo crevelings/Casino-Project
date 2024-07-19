@@ -91,7 +91,7 @@ public class OptionsMenu extends JPanel {
     }
 
     private Map<String, ImageIcon> getBackgroundImages() {
-        File backgroundDirectory = new File("backgrounds");
+        File backgroundDirectory = new File("BlackJack/backgrounds");
         File[] files = backgroundDirectory.listFiles((dir, name) -> name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".png"));
 
         Map<String, ImageIcon> backgroundMap = new HashMap<>();
