@@ -144,7 +144,7 @@ public class OptionsMenu extends JPanel {
     }
 
     private Map<String, String> getMusicFiles() {
-        File musicDirectory = new File("music");
+        File musicDirectory = new File("BlackJack/music");
         File[] files = musicDirectory.listFiles((dir, name) -> name.toLowerCase().endsWith(".wav"));
 
         Map<String, String> musicMap = new HashMap<>();
