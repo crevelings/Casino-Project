@@ -12,7 +12,7 @@ public class Deck {
         for (String suit : suits) {
             for (String value : values) {
                 // Construct the image path based on the card's suit and rank
-                String imagePath = "cards/" + value + "_of_" + suit + ".png";
+                String imagePath = "BlackJack/cards/" + value + "_of_" + suit + ".png";
                 cards.add(new Card(suit, value, imagePath)); // Pass the imagePath
             }
         }
