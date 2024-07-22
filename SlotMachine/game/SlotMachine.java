@@ -18,7 +18,7 @@ class SlotMachine {
 
     public SlotMachine() {
         try {
-            backgroundImage = ImageIO.read(new File("SlotBackground.png")); // Load your background image here
+            backgroundImage = ImageIO.read(new File("SlotMachine/SlotBackground.png")); // Load your background image here
         } catch (IOException e) {
             e.printStackTrace();
         }
