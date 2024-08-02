@@ -1,25 +1,26 @@
 import java.awt.*;
 import java.awt.event.*;
+import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
-import javax.imageio.ImageIO;
 
 class SlotMachine {
     private JFrame frame;
-    private JLabel[] slots;
-    private JLabel messageLabel, balanceLabel, winImageLabel;
+    private JLabel[] slots = new JLabel[9];
+    private JLabel messageLabel, balanceLabel;
+    private JLabel winImageLabel;
     private JButton spinButton, changeBetButton;
     private final String[] symbols = {"🍎", "🍊", "🍋", "🍒", "🍇", "🍉", "🍓", "🍌", "🍍", "🍐"};
     private int balance;
     private int betAmount;
-    private Image backgroundImage;
 
     public SlotMachine() {
+        Image backgroundImage = null;
         try {
-            backgroundImage = ImageIO.read(new File("Game Files/backgrounds/SlotBackground.png")); // Load your background image here
+            backgroundImage = ImageIO.read(new File("Game Files/backgrounds/SlotBackground.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -31,31 +32,30 @@ class SlotMachine {
         balance = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter your total amount:"));
         betAmount = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter your bet amount for each spin:"));
 
-        BackGroundPanel mainPanel = new BackGroundPanel(backgroundImage);
-        mainPanel.setLayout(new BorderLayout());
+        SlotBackGroundPanel mainPanel = new SlotBackGroundPanel(backgroundImage);
+        mainPanel.setLayout(new GridBagLayout());
 
-        JPanel slotsPanel = new JPanel();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JPanel slotsPanel = new JPanel(new GridLayout(3, 3, 5, 5));
         slotsPanel.setOpaque(false);
-        slotsPanel.setLayout(new GridLayout(3, 3, 5, 5)); // Adjusted spacing to 5 pixels
 
         Font slotFont = new Font("Arial", Font.PLAIN, 48);
 
-        slots = new JLabel[9];
-        for (int i = 0; i < 9; i++) {
-            slots[i] = new JLabel(symbols[0]);
+        for (int i = 0; i < slots.length; i++) {
+            slots[i] = new JLabel(symbols[0], SwingConstants.CENTER);
             slots[i].setFont(slotFont);
-            slots[i].setPreferredSize(new Dimension(80, 80)); // Adjusted preferred size
+            slots[i].setPreferredSize(new Dimension(100, 100));
             slotsPanel.add(slots[i]);
         }
 
         spinButton = new JButton("Spin");
         spinButton.addActionListener(new SpinHandler());
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(spinButton);
 
         changeBetButton = new JButton("Change Bet");
         changeBetButton.addActionListener(new ChangeBetHandler());
-        buttonPanel.add(changeBetButton);
 
         messageLabel = new JLabel("");
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -68,11 +68,14 @@ class SlotMachine {
         winImageLabel = new JLabel();
         winImageLabel.setHorizontalAlignment(JLabel.CENTER);
 
-        mainPanel.add(slotsPanel, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-        mainPanel.add(messageLabel, BorderLayout.NORTH);
-        mainPanel.add(balanceLabel, BorderLayout.WEST);
-        mainPanel.add(winImageLabel, BorderLayout.EAST);
+        mainPanel.add(slotsPanel, gbc);
+        mainPanel.add(spinButton, gbc);
+        mainPanel.add(changeBetButton, gbc);
+        mainPanel.add(messageLabel, gbc);
+        mainPanel.add(balanceLabel, gbc);
+
+        // Add winImageLabel on top of the main panel
+        mainPanel.add(winImageLabel, gbc);
 
         frame.add(mainPanel);
         frame.setLocationRelativeTo(null);
@@ -89,8 +92,8 @@ class SlotMachine {
             updateBalance();
 
             Random rand = new Random();
-            for (int i = 0; i < 9; i++) {
-                slots[i].setText(symbols[rand.nextInt(symbols.length)]);
+            for (JLabel slot : slots) {
+                slot.setText(symbols[rand.nextInt(symbols.length)]);
             }
             checkWin();
         }
@@ -103,25 +106,33 @@ class SlotMachine {
     }
 
     public void checkWin() {
-        // Adjust the win conditions based on the new 9-slot layout
-        // For simplicity, let's check for any row or column having the same symbols
+        int[][] paylines = {
+                {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, // Horizontal lines
+                {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, // Vertical lines
+                {0, 4, 8}, {2, 4, 6}             // Diagonal lines
+        };
 
-        // Check rows
-        for (int i = 0; i < 9; i += 3) {
-            if (slots[i].getText().equals(slots[i + 1].getText()) && slots[i].getText().equals(slots[i + 2].getText())) {
-                processWin(slots[i].getText());
+        for (int[] line : paylines) {
+            String[] checkWin = {slots[line[0]].getText(), slots[line[1]].getText(), slots[line[2]].getText()};
+            if (checkWin[0].equals(checkWin[1]) && checkWin[1].equals(checkWin[2])) {
+                if (checkWin[0].equals("🍒")) {
+                    messageLabel.setText("YOU WIN!! Triple Winnings!!");
+                    balance += betAmount * 3;
+                } else if (checkWin[0].equals("🍋")) {
+                    messageLabel.setText("YOU WIN!! Quadruple Winnings!!");
+                    balance += betAmount * 4;
+                } else if (checkWin[0].equals("🍓")) {
+                    messageLabel.setText("YOU WIN!! Quintuple Winnings!!");
+                    balance += betAmount * 5;
+                } else {
+                    messageLabel.setText("YOU WIN!!");
+                    balance += betAmount * 2;
+                }
+                updateBalance();
+                showWinEffects();
                 return;
             }
         }
-
-        // Check columns
-        for (int i = 0; i < 3; i++) {
-            if (slots[i].getText().equals(slots[i + 3].getText()) && slots[i].getText().equals(slots[i + 6].getText())) {
-                processWin(slots[i].getText());
-                return;
-            }
-        }
-
         messageLabel.setText("You lose!");
         if (balance < betAmount) {
             spinButton.setEnabled(false);
@@ -129,31 +140,27 @@ class SlotMachine {
         }
     }
 
-    public void processWin(String symbol) {
-        if (symbol.equals("🍒")) {
-            messageLabel.setText("YOU WIN!! Triple Winnings!!");
-            balance += betAmount * 3;
-        } else if (symbol.equals("🍋")) {
-            messageLabel.setText("YOU WIN!! Quadruple Winnings!!");
-            balance += betAmount * 4;
-        } else if (symbol.equals("🍓")) {
-            messageLabel.setText("YOU WIN!! Quintuple Winnings!!");
-            balance += betAmount * 5;
-        } else {
-            messageLabel.setText("YOU WIN!!");
-            balance += betAmount * 2;
-        }
-        updateBalance();
+    public void showWinEffects() {
+        // Remove spin and change bet buttons
+        spinButton.setVisible(false);
+        changeBetButton.setVisible(false);
 
-        ImageIcon originalIcon = new ImageIcon("confetti.png");
+        // Remove slots from the screen
+        for (JLabel slot : slots) {
+            slot.setVisible(false);
+        }
+
+        // Display confetti image
+        ImageIcon originalIcon = new ImageIcon("Game Files/backgrounds/confetti.png");
         Image originalImage = originalIcon.getImage();
         Image scaledImage = originalImage.getScaledInstance(frame.getWidth(), frame.getHeight(), Image.SCALE_DEFAULT);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
         winImageLabel.setIcon(scaledIcon);
 
+        // Play win sound
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("monkey.wav"));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("Game Files/music/monkey.wav"));
             Clip clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.start();
@@ -161,13 +168,16 @@ class SlotMachine {
             e.printStackTrace();
         }
 
+        // Timer to reset the win effects after 5 seconds
         Timer timer = new Timer(5000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                for (JLabel slot : slots) {
-                    slot.setText(symbols[0]);
-                }
                 messageLabel.setText("");
                 winImageLabel.setIcon(null);
+                spinButton.setVisible(true);
+                changeBetButton.setVisible(true);
+                for (JLabel slot : slots) {
+                    slot.setVisible(true);
+                }
                 spinButton.setEnabled(true);
             }
         });
@@ -183,3 +193,4 @@ class SlotMachine {
         new SlotMachine();
     }
 }
+
