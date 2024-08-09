@@ -38,7 +38,6 @@ public class InsuranceBetHandler {
                 game.dealerFirstCardHidden = false; // Reveal dealer's first card
                 game.updateHandLabels();
                 game.getStatusLabel().setText("Dealer has Blackjack! You lose your bet.");
-                playerAccount.deductBet();
                 game.endRound();
             } else {
                 game.resumeRound();
