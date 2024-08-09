@@ -272,11 +272,11 @@ public class BlackJackGame extends JFrame {
             statusLabel.setText("Hit or Stand?");
         });
 
-        // Check for immediate Blackjack
-        if (player.calculateScore() == 21) {
-            // Player has Blackjack, directly check dealer's hand
-            endRound();
-            return;
+        // Check for immediate Blackjack before updating the GUI
+        if (player.calculateScore() == 21 && player.getHand().size() == 2) {
+            immediateBlackJack();
+            endRound();  // Ensure the round ends correctly after a blackjack
+            return;  // Exit early since the round is over
         }
 
         // Check if dealer's revealed card is an Ace
@@ -517,24 +517,35 @@ public class BlackJackGame extends JFrame {
         }
     }
 
+    // Handle an immediate Blackjack
+    public void immediateBlackJack() {
+        SwingUtilities.invokeLater(() -> statusLabel.setText("Player wins with Blackjack! 3:2 payout."));
+        playerAccount.addBlackJack(); // Payout 3:2 ratio
+    }
+
     // Method to check the result and update pot accordingly
     protected void checkWinner() {
         // Calculate scores
         int dealerScore = dealer.calculateScore();
         int playerScore = player.calculateScore();
 
-        // Determine the outcome of a BlackJack
-        if (playerScore == 21 && player.getHand().size() == 2) {
-            // Player has Blackjack, dealer does not
-            statusLabel.setText("Player wins with Blackjack! 3:2 payout.");
-            playerAccount.addBlackJack(); // Payout 3:2 ratio
-        } else if (dealerScore == 21 && dealer.getHand().size() == 2 && playerScore == 21 && player.getHand().size() == 2) {
-            // Both player and dealer have Blackjack
-            statusLabel.setText("Push! Both have Blackjack.");
-            playerAccount.pushBet();
-        }
 
-        // Determines the pot of a hand accordingly
+
+        // Determine the outcome of a BlackJack
+//        if (playerScore == 21 && player.getHand().size() == 2) {
+//            // Player has Blackjack, dealer does not
+//            statusLabel.setText("Player wins with Blackjack! 3:2 payout.");
+//            playerAccount.addBlackJack(); // Payout 3:2 ratio
+//        }
+//        else if (dealerScore == 21 && dealer.getHand().size() == 2 && playerScore == 21 && player.getHand().size() == 2) {
+//            // Both player and dealer have Blackjack
+//            statusLabel.setText("Push! Both have Blackjack.");
+//            playerAccount.pushBet();
+//        }
+//        endRound();
+
+
+        // Determines the pot of a hand in a regular situation accordingly
         if (dealerScore > 21) {
             // Dealer busts, player wins
             statusLabel.setText("Dealer busts! Player wins.");
